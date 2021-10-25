@@ -1,0 +1,13 @@
+build
+.*/
+*.elf
+*.nso
+*.pfs0
+*.nacp
+*.nro
+*.nsp
+*.npdm
+*.bz2
+*.dksh
+*~
+binaries/
