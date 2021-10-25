@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     //Move the cursor to row 16 and column 20 and then prints "Hello World!"
     //To move the cursor you have to print "\x1b[r;cH", where r and c are respectively
     //the row and column where you want your cursor to move
-    printf("This is a test");
+    printf("Hello World");
     printf("\nThis is a test");
     printf("Print this to switch");
 
