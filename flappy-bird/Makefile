@@ -46,7 +46,7 @@ INCLUDES	:=	include
 
 APP_TITLE       :=      Flappy Bird
 APP_AUTHOR      :=      Hidde Vogelpoel
-APP_VERSION     :=      0.0.1
+APP_VERSION     :=      0.1.0
 
 #---------------------------------------------------------------------------------
 # options for code generation
