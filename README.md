@@ -7,3 +7,4 @@ Examples taken from: [switch-examples made available by switchbrew](https://gith
 Current projects:
 * `hello-world`: A simple text output program
 * `sdl2`: As of 25/10/2021 this folder contains a very basic modification of the [sdl2 example](https://github.com/switchbrew/switch-examples/tree/master/graphics/sdl2) from switchbrew
+* `Flappy Bird`: Do I really need to explain this?
