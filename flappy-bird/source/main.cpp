@@ -3,11 +3,31 @@
 
 #include <SDL.h>
 
-void draw_rect(SDL_Renderer *renderer, int x, int y, int red, int green, int blue, int alpha)
+class Pipe{
+    public:
+        int posX;
+        int posY;
+};
+
+
+void draw_bird(SDL_Renderer *renderer, double y)
 {
-    SDL_SetRenderDrawColor(renderer, red, green, blue, alpha);
-    SDL_Rect r = {x, y, 64, 64};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    SDL_Rect r = {114, int(y), -64, 64};
     SDL_RenderFillRect(renderer, &r);
+}
+
+void draw_pipe(SDL_Renderer *renderer, Pipe ceiling, Pipe ground, int mode){
+
+    // Ground pipe
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_Rect top = {ground.posX, ground.posY, 64, 1080};
+    SDL_RenderFillRect(renderer, &top);  
+
+    // Ceiling pipe
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_Rect bottom = {ceiling.posX, ceiling.posY, 64, -1080};
+    SDL_RenderFillRect(renderer, &bottom);    
 }
 
 int main(int argc, char *argv[])
@@ -16,7 +36,20 @@ int main(int argc, char *argv[])
     SDL_Window *window;
     SDL_Renderer *renderer;
 
-    int done = 0;
+    // Initial variables
+    int done = 0, birdPosY = 80;
+    float birdSpeed = 0;
+
+    // Generate pipes
+    Pipe groundPipes[8];
+    Pipe ceilingPipes[8];
+
+    for(int i = 0; i < 8; i++){
+        groundPipes[i].posX = 512 * i + 512;
+        groundPipes[i].posY = rand() % (1080 - 540 + 1) + 540;
+        ceilingPipes[i].posX = groundPipes[i].posX;
+        ceilingPipes[i].posY = groundPipes[i].posY - 384; 
+    }
 
 
     // mandatory at least on switch, else gfx is not properly closed
@@ -60,13 +93,14 @@ int main(int argc, char *argv[])
 
 
     while (!done) {
+        // Input must be taken in before drawing
         while (SDL_PollEvent(&event)){
             switch(event.type){
                 case SDL_JOYBUTTONDOWN:
 
                     if(event.jbutton.which == 0){
                         if(event.jbutton.button == 0){
-                            // Jump function
+                            birdSpeed = -20;
                         } else if (event.jbutton.button == 10){
                             done = 1;
                         }
@@ -74,10 +108,47 @@ int main(int argc, char *argv[])
             }
         }
 
+
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
         SDL_RenderClear(renderer);
 
-        draw_rect(renderer, 50, 50, 255, 0, 0, 0);
+        // All game functions
+
+        // Check if player is dead
+        if(birdPosY >= 1017 || birdPosY <= 0){
+            // Show death screen, for now this just stops the game (just dont die Kappa)
+            done = 1;
+        }
+
+        birdPosY += birdSpeed;
+        birdSpeed += 1.05;
+
+        draw_bird(renderer, birdPosY);
+
+        for(int i = 0; i < 8; i++){
+
+            // Draw the pipes and move them to the sides
+            draw_pipe(renderer, ceilingPipes[i], groundPipes[i], 0);
+            ceilingPipes[i].posX -= 3;
+            groundPipes[i].posX -= 3;
+
+            // Generate new pipes
+            if(groundPipes[i].posX <= 0){
+                ceilingPipes[i].posX = 4320 - 128;
+                groundPipes[i].posX = 4320 - 128;
+                groundPipes[i].posY = rand() % (1080 - 540 + 1) + 540;
+                ceilingPipes[i].posY = groundPipes[i].posY - 384;
+            }
+
+            // Hit detection
+            if(ceilingPipes[i].posX <= 114 && ceilingPipes[i].posX >= 20){
+                if(ceilingPipes[i].posY >= birdPosY || groundPipes[i].posY <= birdPosY){
+                    done = 1;
+                }
+            }
+        }
 
         SDL_RenderPresent(renderer);
     }
